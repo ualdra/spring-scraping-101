@@ -1,0 +1,528 @@
+:encoding: utf-8
+:lang: es
+:toc: right
+:toc-title: Tabla de contenidos
+:doctype: book
+:imagesdir: ./images
+:source-highlighter: rouge
+
+////
+Nombre - Titulo
+////
+# Scraping con Spring Boot
+Tutorial básico de Scraping con Spring Boot
+Francisco García <paco.garcia@ual.es>
+
+
+// Modo no numerado de apartados
+:numbered!: 
+
+
+[abstract]
+== Resumen
+
+Resumen del tutorial de Scraping con Spring Boot.
+
+.Objetivos
+
+* Realizar una pequeña introducción al scraping de páginas web.
+* Conocer la estructura de una página web.
+* Aprender a usar jsoup.
+* Realizar una API Rest de manera rápida y sencilla obteniendo los datos de otra página web.
+* Utilizar scraping en una página que cargue los datos de forma dinámica.
+
+// Modo numerado
+
+:numbered:
+
+== Introducción 
+
+El Web scraping es una técnica utilizada mediante programas de software para extraer información de sitios web. Usualmente, estos programas simulan la navegación de un humano por Internet, ya sea utilizando el protocolo HTTP manualmente, o incrustando un navegador en una aplicación. Esta técnica se enfoca más en la transformación de datos sin estructura en la web (como el formato HTML) en datos estructurados que pueden ser almacenados y analizados en una base de datos, en una hoja de cálculo o en alguna otra fuente de almacenamiento. Alguno ejemplos de uso del web scraping son la comparación de precios en tiendas, la monitorización de datos relacionados con el clima de cierta región, la detección de cambios en sitios webs y la integración de datos en sitios webs.
+
+image::scraping.png[]
+
+A lo largo del desarrollo de la práctica vamos realizar scraping de una página web y expondremos los datos como una pequeña API Rest con Spring Boot de manera muy sencilla. 
+
+=== Preparando la máquina
+
+Lo primero es comprobar que tenéis instalado y funcionando el siguiente Software.
+
+*	JAVA 11.
+*	Visual Studio Code.
+
+== Desarrollo
+
+[NOTE]
+====
+Podemos partir del proyecto creado en el https://ualdra.github.io/springboot_101/[Tutorial de Spring Boot].
+====
+
+=== Creación de un proyecto de SpringBoot
+
+Para crear un proyecto con todas las configuraciones predefinidas vamos a entrar en la página https://start.spring.io[start.spring.io] y poned las configuraciones que salen a continuación para añadir los paquetes solo tendréis que poner sus nombres en el campo de “Search for dependencies”.
+
+.Iniciando un proyecto Spring Boot
+====
+image::SpringInit.png[]
+====
+<1> Pulsamos en *ADD DEPENDENCIES* para buscar y añadir las siguientes dependencias:
++
+Spring Web:: Permite construir aplicaciones web utilizando un contenedor Apache Tomcat.
+
+<2> Una vez seleccionemos las dependencias pulsaremos en *GENERATE* para descargar un .zip con nuestro proyecto, el cual se puede extraer en el directorio que queramos.
+
+=== Configuración de Visual Studio Code
+
+Para trabajar con Spring Boot en https://code.visualstudio.com/download[Visual Studio Code] vamos a instalar un conjunto de extensiones que nos hagan más facil la vida.
+
+Para ello visitamos la página https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack para instalar el Extension Pack for Java.
+
+image::vscode-extension-java.png[]
+
+Pulsaremos en `Install` para incorporar las siguientes extensiones:
+
+* Language Support for Java™ by Red Hat
+* Debugger for Java
+* Test Runner for Java
+* Maven for Java
+* Project Manager for Java
+* Visual Studio IntelliCode
+
+Una vez instalada nos aparece la ventana de _Get Started_ donde podemos instalar una versión de JDK si no tenemos ya una.
+
+NOTE: Se recomienda instalar una *versión igual o superior a JDK 11*
+
+image::vscode-install-jdk.png[]
+
+También necesitaremos instalar el soporte para Spring Boot mediante el siguiente https://marketplace.visualstudio.com/items?itemName=pivotal.vscode-boot-dev-pack[pack de extensiones].
+
+image::vscode-extension-spring-boot.png[]
+
+Pulsaremos en `Install` para incorporar las siguientes extensiones:
+
+* Spring Boot
+* Spring Initializr Java
+* Spring Boot Dashboard
+
+El siguiente paso será abrir la carpeta del proyecto en Visual Studio code. Podemos comprobar que el proyecto se ha cargado correctamente cuando aparezca en los _tabs_ de *JAVA PROJECTS, MAVEN PROJECTS y SPRING BOOT DASHBOARD*.
+
+image::vscode-open-project.png[]
+
+====
+[IMPORTANT]
+Si en la pestaña *PROBLEMS* nos dice que no encuentra un JDK para la versión del proyecto Spring Boot generado, podemos modificarla cambiando la versión en la siguiente linea del pom.xml
+
+[source,xml]
+----
+	<properties>
+		<java.version>17</java.version>
+	</properties>
+----
+
+====
+
+=== Extracción de datos sobre la COVID-19
+
+Vamos a extraer los datos estadísticos sobre la COVID-19 de la entrada de Wikipedia https://en.wikipedia.org/wiki/COVID-19_pandemic_by_country_and_territory[COVID-19 pandemic by country and territory].
+
+image::wikipedia-covid.png[]
+
+Para extraer los datos vamos a utilizar la libreria https://jsoup.org/[jsoup] que permite extraer datos de una página web mediante consultas por identificador, etiqueta y selectores. Por lo tanto, tenemos que incluir la siguiente dependencia en el `pom.xml`.
+
+.Dependencia de jsoup
+====
+[source,xml]
+----
+    <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>1.13.1</version>
+    </dependency>
+----
+====
+
+El siguiente paso que vamos a hacer un DTO (Data Transfer Object). Estas clases son de tipo POJO (Plain Old Java Object) que es una clase que contiene un conjunto de atributos y métodos, y que se utilizan para estructurar los datos que vamos a extraer / devolver.
+
+.Creacion del archivo DTO `CovidDataDto.java`.
+====
+[source,java]
+----
+package com.example.demo.dto;
+
+public class CovidDataDto {
+    public String country; <1>
+    public Integer cases; <2>
+    public Integer deaths; <3>
+    public Integer recovered; <4>
+
+    public CovidDataDto(String country, Integer cases, Integer deaths, Integer recovered) { <5>
+        this.country = country;
+        this.cases = cases;
+        this.deaths = deaths;
+        this.recovered = recovered;
+    }
+
+    public CovidDataDto() {
+    }
+}
+
+----
+<1> Nombre del país.
+<2> Número de casos.
+<3> Número de muertes.
+<4> Número de recuperados.
+<5> Constructor de la clase.
+====
+
+Como veis hemos creado una clase `CovidDataDto` con los campos country, cases, deaths y recovered.
+
+A continuación vamos a crear una clase que nos permita extraer los datos de la página https://en.wikipedia.org/wiki/COVID-19_pandemic_by_country_and_territory[COVID-19 pandemic by country and territory].
+
+Lo primero que vamos a hacer es analizar la página web para ver que selectores vamos a utilizar para extraer los datos que nos interesan.
+
+En la sección `Statistics > Total cases, deaths, and death rates by country` podemos utilizar las `Herramientas de desarrollo` para ver que selectores vamos a utilizar. Como se ve en la imagen, la tabla se encuentra dentro de una capa llamada `covid-19-cases-deaths-and-rates-by-location` y los elementos que nos interesan son los hijos de la etiqueta `tbody`.
+
+image::wikipedia-table.png[]
+
+También podemos examinar el formato que tiene cada fila de la tabla para asi extraer el nombre del país y los datos de casos, muertes y recuperados.
+
+image::wikipedia-row.png[]
+
+A continuación podemos ver la clase `CovidDataService` que nos permite extraer los datos de la página web.
+
+.Creacion del servicio `CovidDataService.java`.
+====
+[source,java]
+----
+package com.example.demo..services;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
+
+import es.ual.dra.scrapping.dto.CovidDataDto;
+
+@Component("covidDataService") <1>
+public class CovidDataService {
+    public List<CovidDataDto> retrieveCovidData() {
+
+        List<CovidDataDto> covidData = new ArrayList<>();
+
+        try {
+            Document webPage = Jsoup.connect("https://en.wikipedia.org/wiki/COVID-19_pandemic_by_country_and_territory")
+                    .get(); <2>
+            Element tbody = webPage.getElementById("covid-19-cases-deaths-and-rates-by-location").getElementsByTag("tbody").get(0); <3>
+
+            List<Element> rows = tbody.children().subList(2, tbody.children().size()); <4>
+
+            for (Element row : rows) { <5>
+
+                Elements ths = row.getElementsByTag("th");
+                if(ths.isEmpty())   <6>
+                    continue;
+
+                String country = ths.get(0).text(); <7>
+                Elements tds = row.getElementsByTag("td");
+
+                if (tds.size() < 3) <8>
+                    continue;
+
+                Integer cases = toIntOrNull(tds.get(1).text());     <9>
+                Integer deaths = toIntOrNull(tds.get(2).text());    <9>
+                Integer recovered = toIntOrNull(tds.get(3).text()); <9>
+
+                covidData.add(new CovidDataDto(country, cases, deaths, recovered)); <10> 
+            }
+
+            return covidData;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Integer toIntOrNull(String replace) {
+        try {
+            return Integer.parseInt(replace.replace(",", ""));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+}
+
+----
+<1> Anotación de componente.
+<2> Conexión con la página web.
+<3> Selección del elemento tbody de la capa con id `covid-19-cases-deaths-and-rates-by-location`.
+<4> Selección de los elementos hijos de la etiqueta `tbody` que empiezan en la posición 2.
+<5> Bucle for para recorrer los elementos hijos de la etiqueta `tbody`, es decir, cada país.
+<6> Si el elemento `th` está vacío, se salta a la siguiente iteración. No es un país.
+<7> Selección del elemento `th` que contiene el nombre del país.
+<8> Si el número de elementos `td` es menor que 3, se salta a la siguiente iteración. Pertenece al pie de la tabla.
+<9> Selección del elemento `td` que contiene el número de casos, muertes o recuperados.
+<10> Se crea un nuevo objeto `CovidDataDto` con los datos del país.
+====
+
+Por último para la realización de este pequeño ejemplo vamos a crear un controlador que nos permita acceder a los datos mediante la url http://localhost:8080/covid/data.
+
+.Creamos archivo de Controlador `CoviDataController.java`.
+====
+[source,java]
+----
+package com.example.demo.controllers;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import es.ual.dra.scrapping.dto.CovidDataDto;
+import es.ual.dra.scrapping.services.CovidDataService;
+
+@RestController <1>
+@RequestMapping("/covid")   <2>
+public class CovidDataController {
+
+    @Autowired
+    private CovidDataService covidDataService;  <3>
+
+    @GetMapping("data") <4>
+    public ResponseEntity<List<CovidDataDto>> getCovidData() {
+        return new ResponseEntity<List<CovidDataDto>>(covidDataService.retrieveCovidData(),
+                HttpStatus.OK); <5>
+    }
+}
+
+----
+<1> Anotación de controlador REST.
+<2> Anotación de mapeo de petición en la URL `/covid`.
+<3> Inyección de dependencia de la clase `CovidDataService`.
+<4> Mapeo de petición GET a la URL `/covid/data`.
+<5> Devuelve una lista de objetos `CovidDataDto` con los datos del scraping realizados por el servicio.
+====
+
+Para lanzar la aplicación podemos utilizar la pestaña *SPRING BOOT DASHBOARD* e iniciarla en modo normal o depuración.
+
+image::vscode-launch-spring.png[]
+
+[NOTE]
+====
+Si veis que las modificaciones sobre las clases no se aplican, podeis hacer un `maven clean` para recompilar el proyecto.
+====
+
+Si accedemos a la url `http://localhost:8080/covid/data` nos devolverá una lista de objetos `CovidDataDto` con los datos del scraping realizados por el servicio.
+
+image::wikipedia-result.png[]
+
+Con algo tan sencillo como lo que estáis viendo hemos conseguido levantar una API REST completamente funcional con los datos recuperados de la página web de Wikipedia.
+
+=== Extracción de datos dinámicos de los grados de la Universidad de Almería
+
+En este ejercicio vamos a extraer los datos de los https://www.ual.es/estudios/grados[grados de la web de la Universidad de Almería]. La gran diferencia entre esta web y la de la Wikipedia es que en la web de la UAL los datos se obtiene mediante llamadas a una API REST. En estos casos no podemos usar `jsoup` directamente, porque este solo obtiene el HTML que devuelve el servidor, y no aplica los cambios que produce el javascript que se ejecuta en la web.
+
+image::grados-full.png[]
+
+Podemos ver como la página sin Javascript no tiene los datos cargados.
+
+image::grados-sin.png[]
+
+Para solucionar este problema vamos a utilizar https://playwright.dev/[Playwright], una librería que nos permite abrir un navegador web, interactuar con él y recuperar el HTML tras la ejecución de las llamadas a la API REST. Con este HTML, utilizamos `jsoup` para extraer los datos como en el ejemplo anterior.
+
+En primer lugar, vamos a crear una clase `GradosDto` que represente los datos de un grado: su nombre y su código.
+
+.Creacion del archivo DTO `GradosDto.java`.
+====
+[source,java]
+----
+package com.example.demo.dto;
+
+public class GradosDto { <1>
+
+    private String nombre; <2>
+    private String codigo; <3>
+
+    public GradosDto(String nombre, String codigo) {
+        this.nombre = nombre;
+        this.codigo = codigo;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+}
+
+----
+<1> Clase DTO para representar los datos de un grado.
+<2> Atributo `nombre` del grado.
+<3> Atributo `codigo` del grado.
+====
+
+Ahora vamos a crear una clase `GradosService` que nos permita extraer los datos de los grados de la Universidad de Almería. Para ello vamos a utilizar la librería `Playwright` que importaremos en nuestro `pom.xml`.
+
+.Dependencia de Playwright
+====
+[source,xml]
+----
+    <dependency>
+        <groupId>com.microsoft.playwright</groupId>
+        <artifactId>playwright</artifactId>
+        <version>1.17.1</version>
+    </dependency>
+----
+====
+
+Además necesitamos un selector que nos permita detectar cuando se ha cargado la página de la Universidad de Almería. Podemos inspeccionar el último elemento de la lista de grados y copiar su selector mediante el botón derecho y la opción `Copy > Copy selector`.
+
+`body > div > div > div.container.main > div > section > div:nth-child(2) > div:nth-child(19) > div:nth-child(1) > ul > li:nth-child(6) > a > span.ng-binding`
+
+image::grados-selector.png[]
+
+Lo último que necesitamos es el selector de los grados, así como su formato. En este caso podemos utilizar `.sinvinetas > li > a`.
+
+image::grados-row.png[]
+
+Con estos datos podemos crear nuestra clase `GradosService`:
+
+.Creacion del archivo de servicio `GradosService.java`.
+====
+[source,java]
+----
+package com.example.demo.services;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
+
+import es.ual.dra.scrapping.dto.GradosDto;
+
+@Component("gradosService")
+public class GradosService {
+    public List<GradosDto> retrieveGrados() {
+
+        List<GradosDto> gradosList = new ArrayList<>();
+
+        Playwright playwright = Playwright.create();
+        Browser browser = playwright.webkit().launch();
+        Page page = browser.newPage();
+        page.navigate("https://www.ual.es/estudios/grados"); <1>
+        page.waitForSelector(
+                "body > div > div > div.container.main > div > section > div:nth-child(2) > div:nth-child(17) > div:nth-child(2) > div:nth-child(9) > div > ul > li:nth-child(2) > a > span"); <2>
+
+        Document webPage = Jsoup.parse(page.content()); <3>
+
+        Elements grados = webPage.select(".sinvinetas > li > a");   <4>
+
+        for (Element grado : grados) {
+            if (grado == null)
+                continue;
+            Element nombrElement = grado.selectFirst(".ng-binding"); <5>
+            if (nombrElement == null)
+                continue;
+            String nombre = nombrElement.text();
+            String codigo = grado.attr("href").replace("/estudios/grados/presentacion/", ""); <6>
+            gradosList.add(new GradosDto(nombre, codigo));  <7>
+        }
+
+        return gradosList;
+    }
+}
+
+----
+<1> Cargamos la página de grados la Universidad de Almería.
+<2> Esperamos a que se cargue el selector del último de los grados.
+<3> Obtenemos el HTML de la página y se lo pasamos a `Jsoup` para extraer los datos.
+<4> Seleccionamos los grados.
+<5> Obtenemos el nombre del grado.
+<6> Obtenemos el código del grado.
+<7> Creamos un objeto `GradosDto` con los datos del grado.
+====
+
+Para terminar vamos a crear la clase `GradosController` que nos permita devolver los datos de los grados de la Universidad de Almería.
+
+.Creacion del controlador `GradosController.java`.
+====
+[source,java]
+----
+package com.example.demo.controllers;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import es.ual.dra.scrapping.dto.GradosDto;
+import es.ual.dra.scrapping.services.GradosService;
+
+@RestController
+@RequestMapping("/grados") <1>
+public class GradosController {
+
+    @Autowired
+    private GradosService gradosService; <2>
+
+    @GetMapping("data") <1>
+    public ResponseEntity<List<GradosDto>> getGrados() {
+        return new ResponseEntity<List<GradosDto>>(gradosService.retrieveGrados(),
+                HttpStatus.OK); <3>
+    }
+}
+
+----
+<1> Mapeamos la ruta `/grados/data` para obtener los datos de los grados.
+<2> Inyectamos el servicio de grados.
+<3> Devolvemos la lista de grados.
+====
+
+Si accedemos a la url `http://localhost:8080/grados/data` nos devolverá una lista de objetos `GradosDto` con los datos del scraping realizados por el servicio.
+
+image::grados-out.png[]
+
+
+== Actividades
+
+=== Realiza un scraping para tu proyecto individual
+Busca alguna fuente de datos para realizar scraping que puedas utilizar en tu proyecto individual.
+
+=== Guarda los datos del scraping en un fichero JSON
+
+[TIP]
+Puede ser de ayuda https://www.baeldung.com/gson-save-file
+
+
+
