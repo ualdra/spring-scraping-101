@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.17">
+<meta name="author" content="Tutorial básico de Scraping con Spring Boot">
+<title>Scraping con Spring Boot</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment the following line when using as a custom stylesheet */
+/* @import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"; */
+html{font-family:sans-serif;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+b,strong{font-weight:bold}
+abbr{font-size:.9em}
+abbr[title]{cursor:help;border-bottom:1px dotted #dddddf;text-decoration:none}
+dfn{font-style:italic}
+hr{height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type=checkbox],input[type=radio]{padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,::before,::after{box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;line-height:1;position:relative;cursor:auto;-moz-tab-size:4;-o-tab-size:4;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:1px solid #dedede;word-wrap:normal}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 0 0 .1em #fff;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin:0 auto;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border:1px solid #e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:hsla(0,0%,100%,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details{margin-left:1.25rem}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
+details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
+details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class=paragraph]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans-serif;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
+table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
+table.frame-sides{border-width:0 1px}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
+ul.checklist>li>p:first-child{margin-left:-1em}
+ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
+ul.inline{display:flex;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:4px solid #fff;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt,summary{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]{border-bottom:1px dotted}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media amzn-kf8,print{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge .cm {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cp {
+  color: #999999;
+  font-weight: bold;
+}
+pre.rouge .c1 {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .cs {
+  color: #999999;
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cpf {
+  color: #999988;
+  font-style: italic;
+}
+pre.rouge .err {
+  color: #a61717;
+  background-color: #e3d2d2;
+}
+pre.rouge .gd {
+  color: #000000;
+  background-color: #ffdddd;
+}
+pre.rouge .ge {
+  color: #000000;
+  font-style: italic;
+}
+pre.rouge .gr {
+  color: #aa0000;
+}
+pre.rouge .gh {
+  color: #999999;
+}
+pre.rouge .gi {
+  color: #000000;
+  background-color: #ddffdd;
+}
+pre.rouge .go {
+  color: #888888;
+}
+pre.rouge .gp {
+  color: #555555;
+}
+pre.rouge .gs {
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #aaaaaa;
+}
+pre.rouge .gt {
+  color: #aa0000;
+}
+pre.rouge .kc {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kd {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kn {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kp {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kr {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .kt {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .k, pre.rouge .kv {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .mf {
+  color: #009999;
+}
+pre.rouge .mh {
+  color: #009999;
+}
+pre.rouge .il {
+  color: #009999;
+}
+pre.rouge .mi {
+  color: #009999;
+}
+pre.rouge .mo {
+  color: #009999;
+}
+pre.rouge .m, pre.rouge .mb, pre.rouge .mx {
+  color: #009999;
+}
+pre.rouge .sa {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .sb {
+  color: #d14;
+}
+pre.rouge .sc {
+  color: #d14;
+}
+pre.rouge .sd {
+  color: #d14;
+}
+pre.rouge .s2 {
+  color: #d14;
+}
+pre.rouge .se {
+  color: #d14;
+}
+pre.rouge .sh {
+  color: #d14;
+}
+pre.rouge .si {
+  color: #d14;
+}
+pre.rouge .sx {
+  color: #d14;
+}
+pre.rouge .sr {
+  color: #009926;
+}
+pre.rouge .s1 {
+  color: #d14;
+}
+pre.rouge .ss {
+  color: #990073;
+}
+pre.rouge .s, pre.rouge .dl {
+  color: #d14;
+}
+pre.rouge .na {
+  color: #008080;
+}
+pre.rouge .bp {
+  color: #999999;
+}
+pre.rouge .nb {
+  color: #0086B3;
+}
+pre.rouge .nc {
+  color: #445588;
+  font-weight: bold;
+}
+pre.rouge .no {
+  color: #008080;
+}
+pre.rouge .nd {
+  color: #3c5d5d;
+  font-weight: bold;
+}
+pre.rouge .ni {
+  color: #800080;
+}
+pre.rouge .ne {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nl {
+  color: #990000;
+  font-weight: bold;
+}
+pre.rouge .nn {
+  color: #555555;
+}
+pre.rouge .nt {
+  color: #000080;
+}
+pre.rouge .vc {
+  color: #008080;
+}
+pre.rouge .vg {
+  color: #008080;
+}
+pre.rouge .vi {
+  color: #008080;
+}
+pre.rouge .nv, pre.rouge .vm {
+  color: #008080;
+}
+pre.rouge .ow {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .o {
+  color: #000000;
+  font-weight: bold;
+}
+pre.rouge .w {
+  color: #bbbbbb;
+}
+pre.rouge {
+  background-color: #f8f8f8;
+}
+</style>
+</head>
+<body class="book toc2 toc-right">
+<div id="header">
+<h1>Scraping con Spring Boot</h1>
+<div class="details">
+<span id="author" class="author">Tutorial básico de Scraping con Spring Boot</span><br>
+<span id="revdate">Francisco García &lt;paco.garcia@ual.es&gt;</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Tabla de contenidos</div>
+<ul class="sectlevel1">
+<li><a href="#_resumen">Resumen</a></li>
+<li><a href="#_introducción">1. Introducción</a>
+<ul class="sectlevel2">
+<li><a href="#_preparando_la_máquina">1.1. Preparando la máquina</a></li>
+</ul>
+</li>
+<li><a href="#_desarrollo">2. Desarrollo</a>
+<ul class="sectlevel2">
+<li><a href="#_creación_de_un_proyecto_de_springboot">2.1. Creación de un proyecto de SpringBoot</a></li>
+<li><a href="#_configuración_de_visual_studio_code">2.2. Configuración de Visual Studio Code</a></li>
+<li><a href="#_extracción_de_datos_sobre_la_covid_19">2.3. Extracción de datos sobre la COVID-19</a></li>
+<li><a href="#_extracción_de_datos_dinámicos_de_los_grados_de_la_universidad_de_almería">2.4. Extracción de datos dinámicos de los grados de la Universidad de Almería</a></li>
+</ul>
+</li>
+<li><a href="#_actividades">3. Actividades</a>
+<ul class="sectlevel2">
+<li><a href="#_realiza_un_scraping_para_tu_proyecto_individual">3.1. Realiza un scraping para tu proyecto individual</a></li>
+<li><a href="#_guarda_los_datos_del_scraping_en_un_fichero_json">3.2. Guarda los datos del scraping en un fichero JSON</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_resumen">Resumen</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Resumen del tutorial de Scraping con Spring Boot.</p>
+</div>
+<div class="ulist">
+<div class="title">Objetivos</div>
+<ul>
+<li>
+<p>Realizar una pequeña introducción al scraping de páginas web.</p>
+</li>
+<li>
+<p>Conocer la estructura de una página web.</p>
+</li>
+<li>
+<p>Aprender a usar jsoup.</p>
+</li>
+<li>
+<p>Realizar una API Rest de manera rápida y sencilla obteniendo los datos de otra página web.</p>
+</li>
+<li>
+<p>Utilizar scraping en una página que cargue los datos de forma dinámica.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introducción">1. Introducción</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>El Web scraping es una técnica utilizada mediante programas de software para extraer información de sitios web. Usualmente, estos programas simulan la navegación de un humano por Internet, ya sea utilizando el protocolo HTTP manualmente, o incrustando un navegador en una aplicación. Esta técnica se enfoca más en la transformación de datos sin estructura en la web (como el formato HTML) en datos estructurados que pueden ser almacenados y analizados en una base de datos, en una hoja de cálculo o en alguna otra fuente de almacenamiento. Alguno ejemplos de uso del web scraping son la comparación de precios en tiendas, la monitorización de datos relacionados con el clima de cierta región, la detección de cambios en sitios webs y la integración de datos en sitios webs.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/scraping.png" alt="scraping">
+</div>
+</div>
+<div class="paragraph">
+<p>A lo largo del desarrollo de la práctica vamos realizar scraping de una página web y expondremos los datos como una pequeña API Rest con Spring Boot de manera muy sencilla.</p>
+</div>
+<div class="sect2">
+<h3 id="_preparando_la_máquina">1.1. Preparando la máquina</h3>
+<div class="paragraph">
+<p>Lo primero es comprobar que tenéis instalado y funcionando el siguiente Software.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>JAVA 11.</p>
+</li>
+<li>
+<p>Visual Studio Code.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_desarrollo">2. Desarrollo</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Podemos partir del proyecto creado en el <a href="https://ualdra.github.io/springboot_101/">Tutorial de Spring Boot</a>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_creación_de_un_proyecto_de_springboot">2.1. Creación de un proyecto de SpringBoot</h3>
+<div class="paragraph">
+<p>Para crear un proyecto con todas las configuraciones predefinidas vamos a entrar en la página <a href="https://start.spring.io">start.spring.io</a> y poned las configuraciones que salen a continuación para añadir los paquetes solo tendréis que poner sus nombres en el campo de “Search for dependencies”.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 1. Iniciando un proyecto Spring Boot</div>
+<div class="content">
+<div class="imageblock">
+<div class="content">
+<img src="./images/SpringInit.png" alt="SpringInit">
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Pulsamos en <strong>ADD DEPENDENCIES</strong> para buscar y añadir las siguientes dependencias:</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Spring Web</dt>
+<dd>
+<p>Permite construir aplicaciones web utilizando un contenedor Apache Tomcat.</p>
+</dd>
+</dl>
+</div>
+</li>
+<li>
+<p>Una vez seleccionemos las dependencias pulsaremos en <strong>GENERATE</strong> para descargar un .zip con nuestro proyecto, el cual se puede extraer en el directorio que queramos.</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuración_de_visual_studio_code">2.2. Configuración de Visual Studio Code</h3>
+<div class="paragraph">
+<p>Para trabajar con Spring Boot en <a href="https://code.visualstudio.com/download">Visual Studio Code</a> vamos a instalar un conjunto de extensiones que nos hagan más facil la vida.</p>
+</div>
+<div class="paragraph">
+<p>Para ello visitamos la página <a href="https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack" class="bare">https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack</a> para instalar el Extension Pack for Java.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/vscode-extension-java.png" alt="vscode extension java">
+</div>
+</div>
+<div class="paragraph">
+<p>Pulsaremos en <code>Install</code> para incorporar las siguientes extensiones:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Language Support for Java™ by Red Hat</p>
+</li>
+<li>
+<p>Debugger for Java</p>
+</li>
+<li>
+<p>Test Runner for Java</p>
+</li>
+<li>
+<p>Maven for Java</p>
+</li>
+<li>
+<p>Project Manager for Java</p>
+</li>
+<li>
+<p>Visual Studio IntelliCode</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Una vez instalada nos aparece la ventana de <em>Get Started</em> donde podemos instalar una versión de JDK si no tenemos ya una.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Se recomienda instalar una <strong>versión igual o superior a JDK 11</strong>
+</td>
+</tr>
+</table>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/vscode-install-jdk.png" alt="vscode install jdk">
+</div>
+</div>
+<div class="paragraph">
+<p>También necesitaremos instalar el soporte para Spring Boot mediante el siguiente <a href="https://marketplace.visualstudio.com/items?itemName=pivotal.vscode-boot-dev-pack">pack de extensiones</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/vscode-extension-spring-boot.png" alt="vscode extension spring boot">
+</div>
+</div>
+<div class="paragraph">
+<p>Pulsaremos en <code>Install</code> para incorporar las siguientes extensiones:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Spring Boot</p>
+</li>
+<li>
+<p>Spring Initializr Java</p>
+</li>
+<li>
+<p>Spring Boot Dashboard</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>El siguiente paso será abrir la carpeta del proyecto en Visual Studio code. Podemos comprobar que el proyecto se ha cargado correctamente cuando aparezca en los <em>tabs</em> de <strong>JAVA PROJECTS, MAVEN PROJECTS y SPRING BOOT DASHBOARD</strong>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/vscode-open-project.png" alt="vscode open project">
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+Si en la pestaña <strong>PROBLEMS</strong> nos dice que no encuentra un JDK para la versión del proyecto Spring Boot generado, podemos modificarla cambiando la versión en la siguiente linea del pom.xml
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml">	<span class="nt">&lt;properties&gt;</span>
+		<span class="nt">&lt;java.version&gt;</span>17<span class="nt">&lt;/java.version&gt;</span>
+	<span class="nt">&lt;/properties&gt;</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_extracción_de_datos_sobre_la_covid_19">2.3. Extracción de datos sobre la COVID-19</h3>
+<div class="paragraph">
+<p>Vamos a extraer los datos estadísticos sobre la COVID-19 de la entrada de Wikipedia <a href="https://en.wikipedia.org/wiki/COVID-19_pandemic_by_country_and_territory">COVID-19 pandemic by country and territory</a>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/wikipedia-covid.png" alt="wikipedia covid">
+</div>
+</div>
+<div class="paragraph">
+<p>Para extraer los datos vamos a utilizar la libreria <a href="https://jsoup.org/">jsoup</a> que permite extraer datos de una página web mediante consultas por identificador, etiqueta y selectores. Por lo tanto, tenemos que incluir la siguiente dependencia en el <code>pom.xml</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 2. Dependencia de jsoup</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml">    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.jsoup<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>jsoup<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>1.13.1<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>El siguiente paso que vamos a hacer un DTO (Data Transfer Object). Estas clases son de tipo POJO (Plain Old Java Object) que es una clase que contiene un conjunto de atributos y métodos, y que se utilizan para estructurar los datos que vamos a extraer / devolver.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 3. Creacion del archivo DTO <code>CovidDataDto.java</code>.</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.dto</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CovidDataDto</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="n">country</span><span class="o">;</span> <b class="conum">(1)</b>
+    <span class="kd">public</span> <span class="nc">Integer</span> <span class="n">cases</span><span class="o">;</span> <b class="conum">(2)</b>
+    <span class="kd">public</span> <span class="nc">Integer</span> <span class="n">deaths</span><span class="o">;</span> <b class="conum">(3)</b>
+    <span class="kd">public</span> <span class="nc">Integer</span> <span class="n">recovered</span><span class="o">;</span> <b class="conum">(4)</b>
+
+    <span class="kd">public</span> <span class="nf">CovidDataDto</span><span class="o">(</span><span class="nc">String</span> <span class="n">country</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">cases</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">deaths</span><span class="o">,</span> <span class="nc">Integer</span> <span class="n">recovered</span><span class="o">)</span> <span class="o">{</span> <b class="conum">(5)</b>
+        <span class="k">this</span><span class="o">.</span><span class="na">country</span> <span class="o">=</span> <span class="n">country</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">cases</span> <span class="o">=</span> <span class="n">cases</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">deaths</span> <span class="o">=</span> <span class="n">deaths</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">recovered</span> <span class="o">=</span> <span class="n">recovered</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nf">CovidDataDto</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Nombre del país.</p>
+</li>
+<li>
+<p>Número de casos.</p>
+</li>
+<li>
+<p>Número de muertes.</p>
+</li>
+<li>
+<p>Número de recuperados.</p>
+</li>
+<li>
+<p>Constructor de la clase.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Como veis hemos creado una clase <code>CovidDataDto</code> con los campos country, cases, deaths y recovered.</p>
+</div>
+<div class="paragraph">
+<p>A continuación vamos a crear una clase que nos permita extraer los datos de la página <a href="https://en.wikipedia.org/wiki/COVID-19_pandemic_by_country_and_territory">COVID-19 pandemic by country and territory</a>.</p>
+</div>
+<div class="paragraph">
+<p>Lo primero que vamos a hacer es analizar la página web para ver que selectores vamos a utilizar para extraer los datos que nos interesan.</p>
+</div>
+<div class="paragraph">
+<p>En la sección <code>Statistics &gt; Total cases, deaths, and death rates by country</code> podemos utilizar las <code>Herramientas de desarrollo</code> para ver que selectores vamos a utilizar. Como se ve en la imagen, la tabla se encuentra dentro de una capa llamada <code>covid-19-cases-deaths-and-rates-by-location</code> y los elementos que nos interesan son los hijos de la etiqueta <code>tbody</code>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/wikipedia-table.png" alt="wikipedia table">
+</div>
+</div>
+<div class="paragraph">
+<p>También podemos examinar el formato que tiene cada fila de la tabla para asi extraer el nombre del país y los datos de casos, muertes y recuperados.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/wikipedia-row.png" alt="wikipedia row">
+</div>
+</div>
+<div class="paragraph">
+<p>A continuación podemos ver la clase <code>CovidDataService</code> que nos permite extraer los datos de la página web.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Creacion del servicio <code>CovidDataService.java</code>.</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo..services</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.jsoup.Jsoup</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.jsoup.nodes.Document</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.jsoup.nodes.Element</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.jsoup.select.Elements</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">es.ual.dra.scrapping.dto.CovidDataDto</span><span class="o">;</span>
+
+<span class="nd">@Component</span><span class="o">(</span><span class="s">"covidDataService"</span><span class="o">)</span> <b class="conum">(1)</b>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CovidDataService</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">CovidDataDto</span><span class="o">&gt;</span> <span class="nf">retrieveCovidData</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">CovidDataDto</span><span class="o">&gt;</span> <span class="n">covidData</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">Document</span> <span class="n">webPage</span> <span class="o">=</span> <span class="nc">Jsoup</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="s">"https://en.wikipedia.org/wiki/COVID-19_pandemic_by_country_and_territory"</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">get</span><span class="o">();</span> <b class="conum">(2)</b>
+            <span class="nc">Element</span> <span class="n">tbody</span> <span class="o">=</span> <span class="n">webPage</span><span class="o">.</span><span class="na">getElementById</span><span class="o">(</span><span class="s">"covid-19-cases-deaths-and-rates-by-location"</span><span class="o">).</span><span class="na">getElementsByTag</span><span class="o">(</span><span class="s">"tbody"</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <b class="conum">(3)</b>
+
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Element</span><span class="o">&gt;</span> <span class="n">rows</span> <span class="o">=</span> <span class="n">tbody</span><span class="o">.</span><span class="na">children</span><span class="o">().</span><span class="na">subList</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">tbody</span><span class="o">.</span><span class="na">children</span><span class="o">().</span><span class="na">size</span><span class="o">());</span> <b class="conum">(4)</b>
+
+            <span class="k">for</span> <span class="o">(</span><span class="nc">Element</span> <span class="n">row</span> <span class="o">:</span> <span class="n">rows</span><span class="o">)</span> <span class="o">{</span> <b class="conum">(5)</b>
+
+                <span class="nc">Elements</span> <span class="n">ths</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="na">getElementsByTag</span><span class="o">(</span><span class="s">"th"</span><span class="o">);</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">ths</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span>   <b class="conum">(6)</b>
+                    <span class="k">continue</span><span class="o">;</span>
+
+                <span class="nc">String</span> <span class="n">country</span> <span class="o">=</span> <span class="n">ths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">text</span><span class="o">();</span> <b class="conum">(7)</b>
+                <span class="nc">Elements</span> <span class="n">tds</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="na">getElementsByTag</span><span class="o">(</span><span class="s">"td"</span><span class="o">);</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="n">tds</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <b class="conum">(8)</b>
+                    <span class="k">continue</span><span class="o">;</span>
+
+                <span class="nc">Integer</span> <span class="n">cases</span> <span class="o">=</span> <span class="n">toIntOrNull</span><span class="o">(</span><span class="n">tds</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">text</span><span class="o">());</span>     <b class="conum">(9)</b>
+                <span class="nc">Integer</span> <span class="n">deaths</span> <span class="o">=</span> <span class="n">toIntOrNull</span><span class="o">(</span><span class="n">tds</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">text</span><span class="o">());</span>    <b class="conum">(9)</b>
+                <span class="nc">Integer</span> <span class="n">recovered</span> <span class="o">=</span> <span class="n">toIntOrNull</span><span class="o">(</span><span class="n">tds</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">3</span><span class="o">).</span><span class="na">text</span><span class="o">());</span> <b class="conum">(9)</b>
+
+                <span class="n">covidData</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">CovidDataDto</span><span class="o">(</span><span class="n">country</span><span class="o">,</span> <span class="n">cases</span><span class="o">,</span> <span class="n">deaths</span><span class="o">,</span> <span class="n">recovered</span><span class="o">));</span> <b class="conum">(10)</b>
+            <span class="o">}</span>
+
+            <span class="k">return</span> <span class="n">covidData</span><span class="o">;</span>
+
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">IOException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="nf">toIntOrNull</span><span class="o">(</span><span class="nc">String</span> <span class="n">replace</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">replace</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">","</span><span class="o">,</span> <span class="s">""</span><span class="o">));</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">NumberFormatException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Anotación de componente.</p>
+</li>
+<li>
+<p>Conexión con la página web.</p>
+</li>
+<li>
+<p>Selección del elemento tbody de la capa con id <code>covid-19-cases-deaths-and-rates-by-location</code>.</p>
+</li>
+<li>
+<p>Selección de los elementos hijos de la etiqueta <code>tbody</code> que empiezan en la posición 2.</p>
+</li>
+<li>
+<p>Bucle for para recorrer los elementos hijos de la etiqueta <code>tbody</code>, es decir, cada país.</p>
+</li>
+<li>
+<p>Si el elemento <code>th</code> está vacío, se salta a la siguiente iteración. No es un país.</p>
+</li>
+<li>
+<p>Selección del elemento <code>th</code> que contiene el nombre del país.</p>
+</li>
+<li>
+<p>Si el número de elementos <code>td</code> es menor que 3, se salta a la siguiente iteración. Pertenece al pie de la tabla.</p>
+</li>
+<li>
+<p>Selección del elemento <code>td</code> que contiene el número de casos, muertes o recuperados.</p>
+</li>
+<li>
+<p>Se crea un nuevo objeto <code>CovidDataDto</code> con los datos del país.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Por último para la realización de este pequeño ejemplo vamos a crear un controlador que nos permita acceder a los datos mediante la url <a href="http://localhost:8080/covid/data" class="bare">http://localhost:8080/covid/data</a>.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 5. Creamos archivo de Controlador <code>CoviDataController.java</code>.</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.controllers</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.HttpStatus</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">es.ual.dra.scrapping.dto.CovidDataDto</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">es.ual.dra.scrapping.services.CovidDataService</span><span class="o">;</span>
+
+<span class="nd">@RestController</span> <b class="conum">(1)</b>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/covid"</span><span class="o">)</span>   <b class="conum">(2)</b>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CovidDataController</span> <span class="o">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">CovidDataService</span> <span class="n">covidDataService</span><span class="o">;</span>  <b class="conum">(3)</b>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"data"</span><span class="o">)</span> <b class="conum">(4)</b>
+    <span class="kd">public</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">CovidDataDto</span><span class="o">&gt;&gt;</span> <span class="nf">getCovidData</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">CovidDataDto</span><span class="o">&gt;&gt;(</span><span class="n">covidDataService</span><span class="o">.</span><span class="na">retrieveCovidData</span><span class="o">(),</span>
+                <span class="nc">HttpStatus</span><span class="o">.</span><span class="na">OK</span><span class="o">);</span> <b class="conum">(5)</b>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Anotación de controlador REST.</p>
+</li>
+<li>
+<p>Anotación de mapeo de petición en la URL <code>/covid</code>.</p>
+</li>
+<li>
+<p>Inyección de dependencia de la clase <code>CovidDataService</code>.</p>
+</li>
+<li>
+<p>Mapeo de petición GET a la URL <code>/covid/data</code>.</p>
+</li>
+<li>
+<p>Devuelve una lista de objetos <code>CovidDataDto</code> con los datos del scraping realizados por el servicio.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Para lanzar la aplicación podemos utilizar la pestaña <strong>SPRING BOOT DASHBOARD</strong> e iniciarla en modo normal o depuración.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/vscode-launch-spring.png" alt="vscode launch spring">
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Si veis que las modificaciones sobre las clases no se aplican, podeis hacer un <code>maven clean</code> para recompilar el proyecto.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Si accedemos a la url <code><a href="http://localhost:8080/covid/data" class="bare">http://localhost:8080/covid/data</a></code> nos devolverá una lista de objetos <code>CovidDataDto</code> con los datos del scraping realizados por el servicio.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/wikipedia-result.png" alt="wikipedia result">
+</div>
+</div>
+<div class="paragraph">
+<p>Con algo tan sencillo como lo que estáis viendo hemos conseguido levantar una API REST completamente funcional con los datos recuperados de la página web de Wikipedia.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_extracción_de_datos_dinámicos_de_los_grados_de_la_universidad_de_almería">2.4. Extracción de datos dinámicos de los grados de la Universidad de Almería</h3>
+<div class="paragraph">
+<p>En este ejercicio vamos a extraer los datos de los <a href="https://www.ual.es/estudios/grados">grados de la web de la Universidad de Almería</a>. La gran diferencia entre esta web y la de la Wikipedia es que en la web de la UAL los datos se obtiene mediante llamadas a una API REST. En estos casos no podemos usar <code>jsoup</code> directamente, porque este solo obtiene el HTML que devuelve el servidor, y no aplica los cambios que produce el javascript que se ejecuta en la web.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/grados-full.png" alt="grados full">
+</div>
+</div>
+<div class="paragraph">
+<p>Podemos ver como la página sin Javascript no tiene los datos cargados.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/grados-sin.png" alt="grados sin">
+</div>
+</div>
+<div class="paragraph">
+<p>Para solucionar este problema vamos a utilizar <a href="https://playwright.dev/">Playwright</a>, una librería que nos permite abrir un navegador web, interactuar con él y recuperar el HTML tras la ejecución de las llamadas a la API REST. Con este HTML, utilizamos <code>jsoup</code> para extraer los datos como en el ejemplo anterior.</p>
+</div>
+<div class="paragraph">
+<p>En primer lugar, vamos a crear una clase <code>GradosDto</code> que represente los datos de un grado: su nombre y su código.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 6. Creacion del archivo DTO <code>GradosDto.java</code>.</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.dto</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GradosDto</span> <span class="o">{</span> <b class="conum">(1)</b>
+
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">nombre</span><span class="o">;</span> <b class="conum">(2)</b>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">codigo</span><span class="o">;</span> <b class="conum">(3)</b>
+
+    <span class="kd">public</span> <span class="nf">GradosDto</span><span class="o">(</span><span class="nc">String</span> <span class="n">nombre</span><span class="o">,</span> <span class="nc">String</span> <span class="n">codigo</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">nombre</span> <span class="o">=</span> <span class="n">nombre</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">codigo</span> <span class="o">=</span> <span class="n">codigo</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getNombre</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">nombre</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setNombre</span><span class="o">(</span><span class="nc">String</span> <span class="n">nombre</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">nombre</span> <span class="o">=</span> <span class="n">nombre</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCodigo</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">codigo</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setCodigo</span><span class="o">(</span><span class="nc">String</span> <span class="n">codigo</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">codigo</span> <span class="o">=</span> <span class="n">codigo</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Clase DTO para representar los datos de un grado.</p>
+</li>
+<li>
+<p>Atributo <code>nombre</code> del grado.</p>
+</li>
+<li>
+<p>Atributo <code>codigo</code> del grado.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Ahora vamos a crear una clase <code>GradosService</code> que nos permita extraer los datos de los grados de la Universidad de Almería. Para ello vamos a utilizar la librería <code>Playwright</code> que importaremos en nuestro <code>pom.xml</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 7. Dependencia de Playwright</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="xml">    <span class="nt">&lt;dependency&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>com.microsoft.playwright<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>playwright<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>1.17.1<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Además necesitamos un selector que nos permita detectar cuando se ha cargado la página de la Universidad de Almería. Podemos inspeccionar el último elemento de la lista de grados y copiar su selector mediante el botón derecho y la opción <code>Copy &gt; Copy selector</code>.</p>
+</div>
+<div class="paragraph">
+<p><code>body &gt; div &gt; div &gt; div.container.main &gt; div &gt; section &gt; div:nth-child(2) &gt; div:nth-child(19) &gt; div:nth-child(1) &gt; ul &gt; li:nth-child(6) &gt; a &gt; span.ng-binding</code></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/grados-selector.png" alt="grados selector">
+</div>
+</div>
+<div class="paragraph">
+<p>Lo último que necesitamos es el selector de los grados, así como su formato. En este caso podemos utilizar <code>.sinvinetas &gt; li &gt; a</code>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/grados-row.png" alt="grados row">
+</div>
+</div>
+<div class="paragraph">
+<p>Con estos datos podemos crear nuestra clase <code>GradosService</code>:</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 8. Creacion del archivo de servicio <code>GradosService.java</code>.</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.services</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.microsoft.playwright.Browser</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.microsoft.playwright.Page</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">com.microsoft.playwright.Playwright</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.jsoup.Jsoup</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.jsoup.nodes.Document</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.jsoup.nodes.Element</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.jsoup.select.Elements</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">es.ual.dra.scrapping.dto.GradosDto</span><span class="o">;</span>
+
+<span class="nd">@Component</span><span class="o">(</span><span class="s">"gradosService"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GradosService</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">GradosDto</span><span class="o">&gt;</span> <span class="nf">retrieveGrados</span><span class="o">()</span> <span class="o">{</span>
+
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">GradosDto</span><span class="o">&gt;</span> <span class="n">gradosList</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+
+        <span class="nc">Playwright</span> <span class="n">playwright</span> <span class="o">=</span> <span class="nc">Playwright</span><span class="o">.</span><span class="na">create</span><span class="o">();</span>
+        <span class="nc">Browser</span> <span class="n">browser</span> <span class="o">=</span> <span class="n">playwright</span><span class="o">.</span><span class="na">webkit</span><span class="o">().</span><span class="na">launch</span><span class="o">();</span>
+        <span class="nc">Page</span> <span class="n">page</span> <span class="o">=</span> <span class="n">browser</span><span class="o">.</span><span class="na">newPage</span><span class="o">();</span>
+        <span class="n">page</span><span class="o">.</span><span class="na">navigate</span><span class="o">(</span><span class="s">"https://www.ual.es/estudios/grados"</span><span class="o">);</span> <b class="conum">(1)</b>
+        <span class="n">page</span><span class="o">.</span><span class="na">waitForSelector</span><span class="o">(</span>
+                <span class="s">"body &gt; div &gt; div &gt; div.container.main &gt; div &gt; section &gt; div:nth-child(2) &gt; div:nth-child(17) &gt; div:nth-child(2) &gt; div:nth-child(9) &gt; div &gt; ul &gt; li:nth-child(2) &gt; a &gt; span"</span><span class="o">);</span> <b class="conum">(2)</b>
+
+        <span class="nc">Document</span> <span class="n">webPage</span> <span class="o">=</span> <span class="nc">Jsoup</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">page</span><span class="o">.</span><span class="na">content</span><span class="o">());</span> <b class="conum">(3)</b>
+
+        <span class="nc">Elements</span> <span class="n">grados</span> <span class="o">=</span> <span class="n">webPage</span><span class="o">.</span><span class="na">select</span><span class="o">(</span><span class="s">".sinvinetas &gt; li &gt; a"</span><span class="o">);</span>   <b class="conum">(4)</b>
+
+        <span class="k">for</span> <span class="o">(</span><span class="nc">Element</span> <span class="n">grado</span> <span class="o">:</span> <span class="n">grados</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">grado</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+                <span class="k">continue</span><span class="o">;</span>
+            <span class="nc">Element</span> <span class="n">nombrElement</span> <span class="o">=</span> <span class="n">grado</span><span class="o">.</span><span class="na">selectFirst</span><span class="o">(</span><span class="s">".ng-binding"</span><span class="o">);</span> <b class="conum">(5)</b>
+            <span class="k">if</span> <span class="o">(</span><span class="n">nombrElement</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+                <span class="k">continue</span><span class="o">;</span>
+            <span class="nc">String</span> <span class="n">nombre</span> <span class="o">=</span> <span class="n">nombrElement</span><span class="o">.</span><span class="na">text</span><span class="o">();</span>
+            <span class="nc">String</span> <span class="n">codigo</span> <span class="o">=</span> <span class="n">grado</span><span class="o">.</span><span class="na">attr</span><span class="o">(</span><span class="s">"href"</span><span class="o">).</span><span class="na">replace</span><span class="o">(</span><span class="s">"/estudios/grados/presentacion/"</span><span class="o">,</span> <span class="s">""</span><span class="o">);</span> <b class="conum">(6)</b>
+            <span class="n">gradosList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">GradosDto</span><span class="o">(</span><span class="n">nombre</span><span class="o">,</span> <span class="n">codigo</span><span class="o">));</span>  <b class="conum">(7)</b>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">gradosList</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Cargamos la página de grados la Universidad de Almería.</p>
+</li>
+<li>
+<p>Esperamos a que se cargue el selector del último de los grados.</p>
+</li>
+<li>
+<p>Obtenemos el HTML de la página y se lo pasamos a <code>Jsoup</code> para extraer los datos.</p>
+</li>
+<li>
+<p>Seleccionamos los grados.</p>
+</li>
+<li>
+<p>Obtenemos el nombre del grado.</p>
+</li>
+<li>
+<p>Obtenemos el código del grado.</p>
+</li>
+<li>
+<p>Creamos un objeto <code>GradosDto</code> con los datos del grado.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Para terminar vamos a crear la clase <code>GradosController</code> que nos permita devolver los datos de los grados de la Universidad de Almería.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 9. Creacion del controlador <code>GradosController.java</code>.</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.example.demo.controllers</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.HttpStatus</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.http.ResponseEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.GetMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RestController</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">es.ual.dra.scrapping.dto.GradosDto</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">es.ual.dra.scrapping.services.GradosService</span><span class="o">;</span>
+
+<span class="nd">@RestController</span>
+<span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/grados"</span><span class="o">)</span> <b class="conum">(1)</b>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GradosController</span> <span class="o">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">GradosService</span> <span class="n">gradosService</span><span class="o">;</span> <b class="conum">(2)</b>
+
+    <span class="nd">@GetMapping</span><span class="o">(</span><span class="s">"data"</span><span class="o">)</span> <b class="conum">(1)</b>
+    <span class="kd">public</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">GradosDto</span><span class="o">&gt;&gt;</span> <span class="nf">getGrados</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nc">ResponseEntity</span><span class="o">&lt;</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">GradosDto</span><span class="o">&gt;&gt;(</span><span class="n">gradosService</span><span class="o">.</span><span class="na">retrieveGrados</span><span class="o">(),</span>
+                <span class="nc">HttpStatus</span><span class="o">.</span><span class="na">OK</span><span class="o">);</span> <b class="conum">(3)</b>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Mapeamos la ruta <code>/grados/data</code> para obtener los datos de los grados.</p>
+</li>
+<li>
+<p>Inyectamos el servicio de grados.</p>
+</li>
+<li>
+<p>Devolvemos la lista de grados.</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Si accedemos a la url <code><a href="http://localhost:8080/grados/data" class="bare">http://localhost:8080/grados/data</a></code> nos devolverá una lista de objetos <code>GradosDto</code> con los datos del scraping realizados por el servicio.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/grados-out.png" alt="grados out">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_actividades">3. Actividades</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_realiza_un_scraping_para_tu_proyecto_individual">3.1. Realiza un scraping para tu proyecto individual</h3>
+<div class="paragraph">
+<p>Busca alguna fuente de datos para realizar scraping que puedas utilizar en tu proyecto individual.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_guarda_los_datos_del_scraping_en_un_fichero_json">3.2. Guarda los datos del scraping en un fichero JSON</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+Puede ser de ayuda <a href="https://www.baeldung.com/gson-save-file" class="bare">https://www.baeldung.com/gson-save-file</a>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2022-04-19 18:53:10 UTC
+</div>
+</div>
+</body>
+</html>
